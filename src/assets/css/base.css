@@ -1,0 +1,18 @@
+img{
+    vertical-align: middle;
+}
+body{
+    background-color: #fff!important;
+}
+.leftLine:before{
+    content: '';
+    display: inline-block;
+    width: 0.1rem;
+    height: 0.4rem;
+    background-color: #fb9233;
+    margin-right: 0.15rem;
+    vertical-align: middle;
+}
+.am-whitespace{
+    background-color: #f8f8f6;
+}
