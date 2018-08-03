@@ -56,25 +56,26 @@ class MyOrder extends Component {
         let status = null;
         switch (selectedIndex) {
             case 0:
-                status = 9;
+                status = '';
                 break;
             case 1:
-                status = 2;
+                status = 1;
                 break;
             case 2:
-                status = 3;
+                status = 2;
                 break;
             case 3:
-                status = 4;
+                status = 3;
                 break;
         }
 
 
-        // orderApi.orderlist({pageNo, status}).then(result => {
+        orderApi.orderlist({pageNo, status}).then(result => {
             this.setState({
                 isLoading: true
             });
-            // if (result.result == 1) {
+            console.log(result)
+            if (result.code == 0) {
                 const data = oldData || [];
                 const pageSize = 10;
                 const dataLength = data.length;
@@ -94,8 +95,13 @@ class MyOrder extends Component {
                     dataLength: data.length,
                     isLoading:false
                 })
-            // }
-        // })
+            }else{
+                Toast.error(result.msg)
+                this.setState({
+                    isLoading:false
+                })
+            }
+        })
     }
 
     // 改变tab

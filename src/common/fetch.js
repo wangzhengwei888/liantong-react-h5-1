@@ -70,12 +70,16 @@ export function get(requestUrl, params) {
     }).then(checkStatus).then(parseJSON);
 }
 
-export  function postJson(requestUrl,params) {
+export  function postJson(requestUrl,params,ContentTypeForm) {
 
 
     let url = getFullUrl(requestUrl);
     const token = localStorage.getItem('token');
     let headers = {'Content-Type':'application/json;charset=UTF-8'};
+    if(ContentTypeForm){
+        headers = {'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'};
+    }
+
     if (token) {
         headers['token'] = token;
     }

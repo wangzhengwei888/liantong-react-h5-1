@@ -5,6 +5,7 @@ import {withRouter} from 'react-router'
 import {ActionSheet, Flex, WingBlank, Button, Icon, WhiteSpace, Slider, DatePicker, List} from 'antd-mobile';
 import {Img} from 'commonComponent';
 import {common} from 'common';
+import * as reservationPlanApi from '../api/index';
 import './reservationPlan.less';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
@@ -70,6 +71,16 @@ class ReservationPlan extends Component {
         })
     }
     onSubmit = () => {
+        let obj ={
+            enter_id : this.state.clicked,
+            select_speed : this.state.sulv,
+            increase_time : moment(this.state.startDate).format('YYYY-MM-DD HH:mm:ss'),
+            end_time : moment(this.state.endDate).format('YYYY-MM-DD HH:mm:ss')
+        }
+        console.log(obj)
+        reservationPlanApi.setOrderEstimate(obj,'ContentTypeForm').then(result => {
+            console.log(result)
+        })
         this.props.router.push("/reservationDetail")
     }
     onStartChange = (startDate) => {

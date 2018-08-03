@@ -51,7 +51,7 @@ class MyOrderList extends Component {
 
     refreshList = ({pageNo}) => {
 
-        // orderApi.orderlist({pageNo, status}).then(result => {
+        // orderApi.orderInfo({pageNo, order_id:'123eda45eda76'}).then(result => {
             this.setState({
                 isLoading: true
             });
@@ -75,7 +75,7 @@ class MyOrderList extends Component {
                     dataLength: data.length,
                     isLoading:false
                 })
-            // }
+        //     }
         // })
     }
 

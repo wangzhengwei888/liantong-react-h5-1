@@ -5,6 +5,7 @@ import {withRouter} from 'react-router'
 import {ActionSheet, Flex, WingBlank, Button, Icon, WhiteSpace, Slider, DatePicker, List} from 'antd-mobile';
 import {Img} from 'commonComponent';
 import {common} from 'common';
+import * as reservationPlanApi from '../api/index';
 import './reservationPlan.less';
 
 const Item = List.Item;
@@ -22,6 +23,9 @@ class ReservationPlanDetail extends Component {
 
 
     componentDidMount() {
+        reservationPlanApi.getLineSpeeded({enter_id:"ea21def232da"}).then(result => {
+            console.log(result)
+        })
     }
 
 

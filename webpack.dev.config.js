@@ -3,14 +3,13 @@ const webpack = require("webpack");
 let config = require('./webpack.common.config');
 
 var proxyInterface = [
-    '/indexApp/getFloorList',
-    '/orderApi'
+    '/biopapi'
 ];
 var proxy = {};
 //代理
 proxyInterface.forEach(function (item) {
   proxy[item] = {
-    target: 'http://new.reagent.com.cn/reagent-front',
+    target: 'http://61.50.254.246/biopapi',
     changeOrigin: true,
     logLevel: 'debug'
   };

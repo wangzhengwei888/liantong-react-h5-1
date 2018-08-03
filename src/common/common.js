@@ -1,12 +1,13 @@
 //开发环境获取url
-const domain = location.host;
+const domain = location.host + '/biopapi';
 
 //图片地址
 export const IMAGE_DOMAIN = 'http://img.gydspt.com/';
 
 //接口配置
-export const SERVER_DOMAIN = 'http://gkjlh5.gydspt.com/front';
-
+export const SERVER_DOMAIN = 'http://61.50.254.246/biopapi';
+//模拟token
+export const TOKEN = 'EAD2342ED452DA3223';
 export function getFullUrl(requestUrl) {
   //相对路径url   本地开发调试用这个！！！！！
   let url = location.protocol + '//' + domain;

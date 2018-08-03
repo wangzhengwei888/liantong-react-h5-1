@@ -1,15 +1,10 @@
 import {fetch, common} from 'common';
 
-// 订单列表
-export function orderlist({status, pageNo}) {
-    return fetch.get('/orderApi/orderlist', {
-        status,
-        pageNo
-    });
+// 获取提速专线列表接口 enter_id  status
+export function orderlist(obj) {
+    return fetch.get('/order/list', obj);
 }
-
-export function orderdetail({orderid}) {
-    return fetch.get('/orderApp/orderDetail', {
-        orderid
-    });
+//获取订单详情接口 order_id
+export function orderInfo(obj) {
+    return fetch.get('/order/info', obj);
 }

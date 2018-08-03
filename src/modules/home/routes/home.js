@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import {withRouter} from 'react-router'
 import {Button, Toast, Flex, WingBlank, ListView, WhiteSpace} from 'antd-mobile';
 import {common} from 'common';
+import * as loginApi from '../api/index';
 import {Img} from 'commonComponent';
 import './home.less';
 
@@ -81,6 +82,35 @@ class Home extends Component {
                 isLoading: false
             });
         }, 600);
+        //登录状态
+        if(!common.TOKEN){
+            loginApi.getLoginStatus({token: common.TOKEN}).then(result => {
+                console.log(result)
+                if (result.result == 1) {
+                    //手机号可用
+                    if (result.data == 'success') {
+                        return 'success';
+                    } else {
+                        Toast.info(result.msg)
+                        this.setState({isTaggle: false})
+                    }
+                }
+            })
+        }else{
+            loginApi.getLineList({enter_id: 'ea21def232da'}).then(result => {
+                console.log(result)
+                if (result.result == 1) {
+                    //手机号可用
+                    if (result.data == 'success') {
+                        return 'success';
+                    } else {
+                        Toast.info(result.msg)
+                        this.setState({isTaggle: false})
+                    }
+                }
+            })
+        }
+
     }
 
     onEndReached = (event) => {
@@ -137,6 +167,9 @@ class Home extends Component {
                             <Flex.Item>A端地址:22222</Flex.Item>
                             <Flex.Item>Z端地址:2222222</Flex.Item>
                         </Flex>
+                        <Flex style={{justify: 'bettwen', lineHeight: '0.8rem'}}>
+                            <Flex.Item >企业名称:ssssss</Flex.Item>
+                        </Flex>
                         <Flex style={{justify: "between", lineHeight: '0.8rem'}}>
                             <Flex.Item>{`当前状态: ${obj.title}`}</Flex.Item>
                             <Flex.Item><Button size="small"
@@ -182,16 +215,13 @@ class Home extends Component {
                             <Flex.Item className="leftLine" style={{textAlign: 'left'}}>客户基础信息</Flex.Item>
                         </Flex>
                         <Flex style={{justify: 'bettwen', lineHeight: '0.6rem',paddingLeft:'30px'}}>
-                            <Flex.Item style={{textAlign: 'left'}}>企业名称:ssssss</Flex.Item>
-                        </Flex>
-                        <Flex style={{justify: 'bettwen', lineHeight: '0.6rem',paddingLeft:'30px'}}>
                             <Flex.Item style={{textAlign: 'left'}}>客户联系人:22222222</Flex.Item>
                         </Flex>
                     </WingBlank>
                 </div>
                 <WhiteSpace/>
                 <WingBlank className="leftLine" style={{lineHeight: '0.9rem', height: '0.9rem'}}>专线列表</WingBlank>
-                <div className="fix-scroll hastitle hasbottom" style={{marginTop: '5.2rem', padding: 0}}>
+                <div className="fix-scroll hastitle hasbottom" style={{marginTop: '4.6rem', padding: 0}}>
                     <ListView
                         ref={el => this.lv = el}
                         dataSource={this.state.dataSource}
