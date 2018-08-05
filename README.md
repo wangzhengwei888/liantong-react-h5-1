@@ -1,6 +1,3 @@
-需要部署 leimingtech-front 以及依赖leimingtech-api模块
-并能正常访问接口
-例如首页接口：http://192.169.1.190:8080/leimingtech-front/floor/api/indexListAll?timestamp=1493344829234&apKey=advh5
 node.js建议是用版本
 mac node v7.0.0
 windows node v6.10.3
