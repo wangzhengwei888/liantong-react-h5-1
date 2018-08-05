@@ -11,7 +11,7 @@ const routesConfig = (<Route path="/" component={App}>
                     showTitle={false}
                     selectedTab='myOrder'/>
         <Route path='/orderList/(:type)' component={my} showTitle={false} showBottomBar={true}/>
-        <Route path='/myOrderList/(:orderId)' component={MyOrderList} showTitle={true} title="订单列表" showBottomBar={false}/>
+        <Route path='/myOrderList/(:line_id)' component={MyOrderList} showTitle={true} title="订单列表" showBottomBar={false}/>
     </Route>
 )
 

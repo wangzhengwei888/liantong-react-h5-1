@@ -9,7 +9,7 @@ var proxy = {};
 //代理
 proxyInterface.forEach(function (item) {
   proxy[item] = {
-    target: 'http://61.50.254.246/biopapi',
+    target: 'http://61.50.254.246',
     changeOrigin: true,
     logLevel: 'debug'
   };

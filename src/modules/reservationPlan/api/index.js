@@ -1,11 +1,16 @@
 import {fetch, common} from 'common';
 
-//计算当前配置费用接口  /order/estimate
+//创建订单接口（立即创建）
 export function setOrderEstimate(obj,ContentTypeForm) {
-    return fetch.post('/order/estimate',obj,ContentTypeForm);
+    return fetch.post('/order/create',obj,ContentTypeForm);
 }
 
-///line/speeded  获取已提速企业专线列表接口  enter_id
-export function getLineSpeeded(obj) {
-    return fetch.post('/line/speeded',obj);
+//获取单价 /order/rule
+export function getOrderRule() {
+    return fetch.get('/order/rule');
+}
+
+///order/info  获取订单详情接口（订单详情） order_id
+export function getOrderInfo(obj) {
+    return fetch.get('/order/info',obj);
 }

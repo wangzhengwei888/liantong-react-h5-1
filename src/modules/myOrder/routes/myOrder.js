@@ -10,26 +10,7 @@ import * as orderApi from '../api/order';
 const TabPane = Tabs.TabPane;
 const Item = List.Item;
 
-const oldData = [
-    {
-        img: 'https://zos.alipayobjects.com/rmsportal/dKbkpPXKfvZzWCM.png',
-        title: 'Meet hotel',
-        des: '不是所有的兼职汪都需要风吹日晒',
-        id:1
-    },
-    {
-        img: 'https://zos.alipayobjects.com/rmsportal/XmwCzSeJiqpkuMB.png',
-        title: 'McDonald\'s invites you',
-        des: '不是所有的兼职汪都需要风吹日晒',
-        id:2
-    },
-    {
-        img: 'https://zos.alipayobjects.com/rmsportal/hfVtzEhPzTUewPm.png',
-        title: 'Eat the week',
-        des: '不是所有的兼职汪都需要风吹日晒',
-        id:3
-    },
-];
+const oldData = [];
 
 
 class MyOrder extends Component {
@@ -70,14 +51,14 @@ class MyOrder extends Component {
         }
 
 
-        orderApi.orderlist({pageNo, status}).then(result => {
+        orderApi.orderlist({pageNo, status,enter_id:'1'}).then(result => {
             this.setState({
                 isLoading: true
             });
             console.log(result)
             if (result.code == 0) {
-                const data = oldData || [];
-                const pageSize = 10;
+                const data = result.data || [];
+                const pageSize = 20;
                 const dataLength = data.length;
                 let hasMore = true;
                 if (dataLength < pageSize) {
@@ -86,7 +67,7 @@ class MyOrder extends Component {
                 if (this.state.isInit) {
                     this.orderList = data;
                 } else {
-                    this.orderList = [...this.orderList, ...data];
+                    this.orderList = [...this.dataSource, ...data];
                 }
                 this.setState({
                     hasMore,
@@ -96,7 +77,7 @@ class MyOrder extends Component {
                     isLoading:false
                 })
             }else{
-                Toast.error(result.msg)
+                Toast.fail(result.msg)
                 this.setState({
                     isLoading:false
                 })
@@ -154,9 +135,9 @@ class MyOrder extends Component {
     goHelp = () =>{
         console.log("aaaaaaaaaa")
     }
-    goOrderDetail = (orderId) => {
-        console.log(orderId)
-        this.props.router.push(`/myOrderList/${orderId}`)
+    goOrderDetail = (line_id) => {
+        console.log(line_id)
+        this.props.router.push(`/myOrderList/${line_id}`)
     }
 
   render() {
@@ -166,7 +147,7 @@ class MyOrder extends Component {
               <div className="rowBox" key={rowID} style={{padding: '0 15px'}}>
                   <WingBlank>
                       <List>
-                          <Item onClick={() => this.goOrderDetail(rowData.id)} arrow="horizontal" extra={'订单详情'}>专线号码:111111</Item>
+                          <Item onClick={() => this.goOrderDetail(rowData.line_id)} arrow="horizontal" extra={'订单详情'}>专线号码:{rowData.product_num}</Item>
                       </List>
                   </WingBlank>
               </div>

@@ -2,7 +2,7 @@ import React, {
     Component
 } from 'react'
 import {withRouter} from 'react-router'
-import {ActionSheet, Flex, WingBlank, Button, Icon, WhiteSpace, Slider, DatePicker, List} from 'antd-mobile';
+import {ActionSheet, Flex, WingBlank, Button, Icon, WhiteSpace, Slider, DatePicker, List,Toast} from 'antd-mobile';
 import {Img} from 'commonComponent';
 import {common} from 'common';
 import * as reservationPlanApi from '../api/index';
@@ -25,13 +25,16 @@ class ReservationPlan extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            clicked: '333333',
             hideTips: false,
-            sulv: 50,
             startDate: zhNow,
             maxDate: maxZhNow,
             endDate: zhNow,
-            timeRing:0
+            timeRing: 0,
+            line_id: '',
+            curr_speed:10,
+            min_curr_speed:10,
+            hlwLineNo:"请选择",
+            UnitPrice:0
         }
     }
 
@@ -41,10 +44,32 @@ class ReservationPlan extends Component {
 
 
     componentDidMount() {
+        // 当前url参数 专线ID 当前速率 专线号码
+        const line_id = sessionStorage.getItem("line_id");
+        const min_curr_speed = Number(sessionStorage.getItem("curr_speed")) + 10;
+        const curr_speed = Number(sessionStorage.getItem("curr_speed")) + 10;
+        const hlwLineNo = sessionStorage.getItem("hlwLineNo");
+        if(line_id && min_curr_speed && curr_speed && hlwLineNo){
+            this.setState({
+                line_id,
+                min_curr_speed,
+                curr_speed,
+                hlwLineNo
+            })
+        }
+
+        reservationPlanApi.getOrderRule().then(result=>{
+            this.setState({
+                UnitPrice:result.data.price
+            })
+            sessionStorage.setItem("UnitPrice",result.data.price)
+        })
+
     }
 
     showActionSheet = () => {
-        const BUTTONS = ['111111', '222222', '33333'];
+        const BUTTONS =  JSON.parse(sessionStorage.getItem("hlwLineNoArr"))
+
         ActionSheet.showActionSheetWithOptions({
                 options: BUTTONS,
                 message: '请选择提速专线',
@@ -55,7 +80,17 @@ class ReservationPlan extends Component {
             (buttonIndex) => {
                 console.log(buttonIndex)
                 if (buttonIndex >= 0) {
-                    this.setState({clicked: BUTTONS[buttonIndex]});
+                    let lineArr = JSON.parse(sessionStorage.getItem("lineArr"))
+                    let checkedLine = lineArr.filter((list,index)=>{
+                        return list.hlwLineNo == BUTTONS[buttonIndex]
+                    })
+                    console.log(checkedLine)
+                    this.setState({
+                        hlwLineNo: checkedLine[0].hlwLineNo,
+                        line_id: checkedLine[0].line_id,
+                        min_curr_speed: Number(checkedLine[0].curr_speed) + 10,
+                        curr_speed: Number(checkedLine[0].curr_speed) + 10,
+                    });
                 }
 
             });
@@ -67,28 +102,59 @@ class ReservationPlan extends Component {
     }
     changeSulv = (value) => {
         this.setState({
-            sulv: value
+            curr_speed: value
         })
     }
     onSubmit = () => {
-        let obj ={
-            enter_id : this.state.clicked,
-            select_speed : this.state.sulv,
-            increase_time : moment(this.state.startDate).format('YYYY-MM-DD HH:mm:ss'),
-            end_time : moment(this.state.endDate).format('YYYY-MM-DD HH:mm:ss')
+        let obj = {
+            select_speed: this.state.curr_speed,
+            increase_time: moment(this.state.startDate).format('YYYY-MM-DD HH:mm:ss'),
+            end_time: moment(this.state.endDate).format('YYYY-MM-DD HH:mm:ss'),
+            curr_time: Date.parse(new Date()),
+            line_id: this.state.line_id,
+            user_id:JSON.parse(sessionStorage.getItem("userInfo")).user_id,
+            day:this.state.timeRing,
+            price:this.state.UnitPrice,
         }
         console.log(obj)
-        reservationPlanApi.setOrderEstimate(obj,'ContentTypeForm').then(result => {
+        if(obj.line_id == ""){
+            Toast.info("请选择提速专线")
+            return
+        }
+        if(obj.select_speed == ""){
+            Toast.info("请选择提速专线速率")
+            return
+        }
+        if(obj.increase_time == ""){
+            Toast.info("请选择开始时间")
+            return
+        }
+        if(obj.end_time == ""){
+            Toast.info("请选择结束时间")
+            return
+        }
+
+        if(this.state.timeRing <= 0){
+            Toast.info("请选择时长")
+            return
+        }
+        reservationPlanApi.setOrderEstimate(obj, 'ContentTypeForm').then(result => {
             console.log(result)
+            if(result.code == 0){
+               this.props.router.push("/reservationDetail?orderId=" + result.data.order_id)
+            }else{
+                Toast.fail(result.msg)
+            }
+
         })
-        this.props.router.push("/reservationDetail")
+
     }
     onStartChange = (startDate) => {
         let timeRing = this.state.timeRing;
-        if(this.state.endDate){
-            timeRing  = Math.ceil(this.state.endDate.diff(startDate, 'days',true))
+        if (this.state.endDate) {
+            timeRing = Math.ceil(this.state.endDate.diff(startDate, 'days', true))
         }
-console.log(timeRing)
+        console.log(timeRing)
         this.setState({
             startDate,
             maxDate: moment(startDate).add(30, 'days'),
@@ -96,7 +162,7 @@ console.log(timeRing)
         });
     }
     onEndChange = (endDate) => {
-        let timeRing = Math.ceil(endDate.diff(this.state.startDate, 'days',true))
+        let timeRing = Math.ceil(endDate.diff(this.state.startDate, 'days', true))
         this.setState({
             endDate,
             timeRing
@@ -104,13 +170,14 @@ console.log(timeRing)
         console.log(timeRing)
     }
     //去帮助中心
-    goHelp = () =>{
+    goHelp = () => {
         console.log("aaaaaaaaaa")
     }
 
 
     render() {
         let endMinDate = moment.max(this.state.endDate, this.state.startDate);
+        console.log(this.state.min_curr_speed)
         return (
             <div className='reservationPlanBox'>
                 <Flex className="reservationPlanTitle" style={{justify: 'end'}}>
@@ -123,7 +190,7 @@ console.log(timeRing)
                     </img></Flex.Item>
                 </Flex>
                 <div className="fix-scroll hastitle hasbottom">
-                    <div style={{height: '100%', overflow: 'auto',backgroundColor:"#fff"}}>
+                    <div style={{height: '100%', overflow: 'auto', backgroundColor: "#fff"}}>
                         <WingBlank>
                             <Flex style={{justify: 'bettwen', lineHeight: '1rem'}}>
                                 <Flex.Item className="leftLine" style={{textAlign: 'left'}}>专线基础信息:</Flex.Item>
@@ -131,7 +198,7 @@ console.log(timeRing)
                             <Flex>
                                 <Flex.Item style={{textAlign: 'left'}}>专线号码</Flex.Item>
                                 <Flex.Item style={{textAlign: 'right'}}>
-                                    <span onClick={this.showActionSheet}>{this.state.clicked}</span>
+                                    <span onClick={this.showActionSheet}>{this.state.hlwLineNo}</span>
                                     <Icon type="down" style={{verticalAlign: 'middle', marginLeft: "0.2rem"}}></Icon>
                                 </Flex.Item>
                             </Flex>
@@ -156,21 +223,21 @@ console.log(timeRing)
                             <div>
                                 <Flex style={{justify: 'bettwen', lineHeight: '1rem'}}>
                                     <Flex.Item className="leftLine" style={{textAlign: 'left'}}>选择提速速率:</Flex.Item>
-                                    <Flex.Item style={{textAlign: 'right'}}>{`${this.state.sulv}M`}</Flex.Item>
+                                    <Flex.Item style={{textAlign: 'right'}}>{`${this.state.curr_speed}M`}</Flex.Item>
                                 </Flex>
                                 <div className="sliderBox">
                                     <Slider
                                         style={{height: '0.8rem'}}
-                                        defaultValue={this.state.sulv}
-                                        min={10}
+                                        defaultValue={this.state.min_curr_speed}
+                                        min={this.state.min_curr_speed}
                                         max={100}
                                         step={10}
                                         onChange={this.changeSulv}
                                         onAfterChange={this.changeSulv}
                                     />
                                     <Flex className="sliderNum">
-                                        <Flex.Item style={{textAlign: "left"}}>10M</Flex.Item>
-                                        <Flex.Item>50M</Flex.Item>
+                                        <Flex.Item style={{textAlign: "left"}}>{this.state.min_curr_speed}M</Flex.Item>
+                                        {/*<Flex.Item>50M</Flex.Item>*/}
                                         <Flex.Item style={{textAlign: 'right'}}>100M</Flex.Item>
                                     </Flex>
                                 </div>
@@ -206,11 +273,15 @@ console.log(timeRing)
                             <WingBlank>
                                 <Flex style={{justify: 'bettwen', lineHeight: '1rem'}}>
                                     <Flex.Item style={{textAlign: 'left'}}>预约时长:{this.state.timeRing}</Flex.Item>
-                                    <Flex.Item style={{textAlign: 'right'}}>价格合计:{this.state.timeRing * 500}</Flex.Item>
+                                    <Flex.Item style={{textAlign: 'right'}}>价格合计:{this.state.timeRing * this.state.curr_speed * this.state.UnitPrice}</Flex.Item>
                                 </Flex>
                             </WingBlank>
-                            <Flex style={{justify: 'bettwen', lineHeight: '1rem',margin:'0.3rem 0'}}>
-                                <Flex.Item><Button onClick={this.onSubmit} style={{backgroundColor:"#fb9233",borderRadius:"50px",color:"#fff"}}>立即提速</Button></Flex.Item>
+                            <Flex style={{justify: 'bettwen', lineHeight: '1rem', margin: '0.3rem 0'}}>
+                                <Flex.Item><Button onClick={this.onSubmit} style={{
+                                    backgroundColor: "#fb9233",
+                                    borderRadius: "50px",
+                                    color: "#fff"
+                                }}>立即提速</Button></Flex.Item>
                             </Flex>
                         </WingBlank>
                     </div>

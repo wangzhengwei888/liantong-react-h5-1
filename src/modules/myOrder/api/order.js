@@ -4,7 +4,7 @@ import {fetch, common} from 'common';
 export function orderlist(obj) {
     return fetch.get('/order/list', obj);
 }
-//获取订单详情接口 order_id
-export function orderInfo(obj) {
-    return fetch.get('/order/info', obj);
+//获取专线订单列表接口（我的订单订单列表） /order/enter/list
+export function orderEnterList(obj) {
+    return fetch.get('/order/enter/list', obj);
 }

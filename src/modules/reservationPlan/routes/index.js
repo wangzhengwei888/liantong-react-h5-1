@@ -13,7 +13,7 @@ const routesConfig = (<Route path="/" component={App}>
                     showBottomBar={true}
                     showTitle={false}
                     selectedTab='reservationPlan'/>
-        <Route path='/reservationDetail' component={reservationDetail} title='预约提速详情' />
+        <Route path='/reservationDetail' component={reservationDetail} showBottomBar={true} title='预约提速详情' />
     </Route>
 )
 
