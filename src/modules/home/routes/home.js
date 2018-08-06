@@ -30,7 +30,7 @@ class Home extends Component {
         if (!token) {
             Modal.alert("提示", "未登录", [{
                 text: "返回", onPress: function () {
-                    alert("返回上一页")
+                    // alert("返回上一页")
                 }
             }])
 
@@ -65,7 +65,7 @@ class Home extends Component {
                     Toast.info(result.msg,3,()=>{
                         Modal.alert("提示", "未登录", [{
                             text: "返回", onPress: function () {
-                                alert("返回上一页")
+                                // alert("返回上一页")
                             }
                         }])
                     })
